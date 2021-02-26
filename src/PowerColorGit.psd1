@@ -28,7 +28,7 @@ CompanyName = 'Unknown'
 Copyright = 'Copyright (c) 2021 Anders Gardebring'
 
 # Description of the functionality provided by this module
-Description = 'To be added.'
+Description = 'Git functions to provide an easier and prettier command line experience with git'
 
 # Minimum version of the PowerShell engine required by this module
 # PowerShellVersion = ''
