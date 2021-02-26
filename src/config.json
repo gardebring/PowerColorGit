@@ -1,0 +1,11 @@
+{
+    "commands": {
+        "branch": {
+            "showhead": false
+        },
+        "checkout": {
+            "includehead": false,
+            "pullaftercheckout": true
+        }
+    }
+}
