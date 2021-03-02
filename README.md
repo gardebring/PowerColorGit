@@ -28,7 +28,7 @@ Import-Module PowerColorGit
 PowerColorGit status
 PowerColorGit branch
 PowerColorGit branch -a
-PowerColorGit checkout partalbranchname
+PowerColorGit checkout partialbranchname
 ```
 
 List the current working tree status
@@ -38,7 +38,7 @@ PowerColorGit status
 TODO: Add screenshot
 
 List all remote-tracking and local branches.
-Please note that the HEAD branch will by default not be displayed in PowerColorGit. You can change this in the configuration.
+Please note that the HEAD branch will by default not be displayed in PowerColorGit. You can change this in the [configuration](./src/config.json).
 ```powershell
 PowerColorGit branch -a
 ```
