@@ -42,6 +42,7 @@ PowerColorGit branch -a
 TODO: Add screenshot
 
 ## Alias to pcg
+Warning. Do not alias to **git** since PowerColorGit uses the git command internally and this would cause the module to call itself.
 ```powershell
 Set-Alias -Name pcg -Value PowerColorGit -Option AllScope
 ```
