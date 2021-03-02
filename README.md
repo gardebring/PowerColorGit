@@ -17,7 +17,7 @@ With PowerColorGit you instead get this output:
 
 ![Screenshot 1](./media/screens/powercolorgit_status.png)
 
-PowerColorGit will also fallback to default behaviour when an option or command is not specifically implemented in PowerColorGit, so you can use commands like _PowerColorGit clone_, _PowerColorGit push_ or _powercolorgit status --short_ even though nothing is implemented in PowerColorGit for these commands.
+PowerColorGit will also fallback to default behaviour when an option or command is not specifically implemented in PowerColorGit, so you can use commands like _PowerColorGit clone_, _PowerColorGit push_ or _powercolorgit status --short_ even though nothing is implemented in PowerColorGit for these.
 
 ## Installation
 Work in progress
