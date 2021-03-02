@@ -10,9 +10,11 @@ For the module to work, you must first install [Terminal-Icons](https://github.c
 The module provides enhancements to the _git status_ _git branch_ and _git checkout_ commands.
 
 For example, this is how the standard output of git status can look like:
+
 ![Screenshot 1](./media/screens/git_status.png)
 
 With PowerColorGit you instead get this output:
+
 ![Screenshot 1](./media/screens/powercolorgit_status.png)
 
 ## Installation
