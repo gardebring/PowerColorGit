@@ -37,7 +37,7 @@ PowerColorGit status
 ```
 TODO: Add screenshot
 
-List all remote-tracking and local branches
+List all remote-tracking and local branches.
 Please note that the HEAD branch will by default not be displayed in PowerColorGit. You can change this in the configuration.
 ```powershell
 PowerColorGit branch -a
