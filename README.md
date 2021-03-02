@@ -2,7 +2,7 @@
 
 A Powershell module that improves on the git command line experience with colorized output with icons as well as an easier branch selection experience.
 
-##Overview#
+## Overview #
 
 *PowerColorGit* is a Powershell module that improves on the git command line experience with simplified and colorized output and simplified branch selection.
 For the module to work, you must first install [Terminal-Icons](https://github.com/devblackops/Terminal-Icons/) and setup the [Nerd Fonts](https://github.com/ryanoasis/nerd-fonts/)
