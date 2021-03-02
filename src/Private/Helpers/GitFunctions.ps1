@@ -90,3 +90,62 @@ function Get-Git-Branches-Complex {
       
       return $branches
 }
+
+function Get-Is-Branch-Type{
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$branchName,
+
+        [Parameter(Mandatory = $true)]
+        [string]$shouldStartWith
+    )
+    return ($branchName.StartsWith("${shouldStartWith}/", "CurrentCultureIgnoreCase") -or $branchName.StartsWith("${shouldStartWith}-", "CurrentCultureIgnoreCase")  -or $branchName.StartsWith("${shouldStartWith}_", "CurrentCultureIgnoreCase"))            
+}
+
+function Get-Branch-Icon{
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$branchName,
+
+        [Parameter(Mandatory = $true)]
+        [array]$branchTypes,
+
+        [Parameter(Mandatory = $true)]
+        [hashtable]$glyphs,
+
+        [Parameter(Mandatory = $true)]
+        [bool]$setIconColor
+    )
+
+    $selectedBranchType = $null
+    foreach ($branchType in $branchTypes) {
+        if($null -ne $branchType.branchNames){
+            foreach ($bn in $branchType.branchNames) {
+                if($bn -eq $branchName){
+                    $selectedBranchType = $branchType
+                    break                    
+                }
+            }
+        }
+        if($null -ne $branchType.branchStartsWith){
+            foreach ($bs in $branchType.branchStartsWith){
+                if(Get-Is-Branch-Type -branchName $branchName -shouldStartWith $bs){
+                    $selectedBranchType = $branchType
+                    break                
+                }
+            }
+        }
+    }
+
+    if($null -eq $selectedBranchType){
+        return " "
+    }else{
+        $icon = $glyphs[$selectedBranchType.icon]
+        if($setIconColor){
+            $color = (ConvertFrom-RGBColor -RGB ($selectedBranchType.color))
+            return -join($color, $icon) 
+        }else{
+            return $icon
+        }
+    }
+}

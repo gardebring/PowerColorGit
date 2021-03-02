@@ -12,6 +12,7 @@ function Get-Command-Checkout {
     )
 
     $commandConfig = $config.commands.checkout
+    $branchTypes = $config.commands.branch.branchTypes
 
     if(1 -ne $params.count){
         return $null
@@ -23,7 +24,7 @@ function Get-Command-Checkout {
         return $null
     }
 
-    $branches = (Get-Git-Branches-Complex -includehead $commandConfig.includehead  -showAll $True -remote $False)
+    $branches = (Get-Git-Branches-Complex -includehead $commandConfig.includeHead  -showAll $True -remote $False)
 
     $matchedBranches = @()
     $selectedBranchIndex = -1
@@ -70,20 +71,25 @@ function Get-Command-Checkout {
         foreach ($index in $matchedBranches) {
             $isLocal = $branches["isLocal"][$index]
             $isRemote = $branches["isRemote"][$index]
+            $bn = $branches["branchName"][$index]
 
-            $menuItem = $branches["branchName"][$index]
-
-            if($isRemote){
-                $menuItem = -join($symbols.globe, " ", $menuItem)
-            }else{
-                $menuItem = -join("  ", $menuItem)
-            }
+            $menuItem = ""
 
             if($isLocal){
-                $menuItem = -join($symbols.house, " ", $menuItem)
+                $menuItem = -join($menuItem, $symbols.house, " ")
             }else{
-                $menuItem = -join("  ", $menuItem)
+                $menuItem = -join($menuItem, "  ")
             }
+
+            if($isRemote){
+                $menuItem = -join($menuItem, $symbols.globe, " ")
+            }else{
+                $menuItem = -join($menuItem, "  ")
+            }
+
+            $menuItem = -join($menuItem, (Get-Branch-Icon -branchName $bn -branchTypes $branchTypes -glyphs $glyphs -setIconColor $false)," ")
+
+            $menuItem = -join($menuItem, $bn)
 
             $menu += $menuItem
         }
@@ -100,7 +106,7 @@ function Get-Command-Checkout {
     $branchName = $branches["branchName"][$selectedBranchIndex]
 
     . git checkout $branchName
-    if($commandConfig.pullaftercheckout -and $selectedBranchHasRemote){
+    if($commandConfig.pullAfterCheckout -and $selectedBranchHasRemote){
         Write-Host "Pulling changes..."
         $pr = (git pull)
         Write-Host $pr
