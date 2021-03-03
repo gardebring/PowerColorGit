@@ -40,6 +40,7 @@ PowerColorGit status
 ### List all remote-tracking and local branches.
 In this example, the currently selected branch is _feature/add_support_for_branch_picker_ as indicated with the green color and checkmark.
 Please note that the HEAD branch will by default not be displayed in PowerColorGit. You can change this in the [configuration](./src/config.json#L4).
+In this example, the only remotely available branch is _main_, all others are local only, as indicated with the icons.
 ```powershell
 PowerColorGit branch -a
 ```
@@ -48,7 +49,7 @@ PowerColorGit branch -a
 ### Checkout a branch.
 With PowerColorGit you can checkout a branch by providing the full or partial name of a branch. If a single match is found based on the name or partial name you provided, you will be switched to that branch. If multiple branches were found you will be shown a menu to select which branch you want to switch to.
 Please note that the HEAD branch will by default not be displayed in PowerColorGit. You can change this in the [configuration](./src/config.json#L53).
-In the example below three branches matching the partial branch name _feature_ was found:
+In the example below three branches matching the partial branch name _feature_ was found, all of them are local only branches as indicated with the icons:
 ```powershell
 PowerColorGit checkout feature
 ```
