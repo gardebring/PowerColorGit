@@ -50,8 +50,8 @@ PowerColorGit branch -a
 With PowerColorGit you can checkout a branch by providing the full or partial name of a branch.\
 If a single match is found based on the name or partial name you provided, you will be switched to that branch.\
 If multiple branches were found you will be shown a menu to select which branch you want to switch to.\
-Please note that the HEAD branch will by default not be displayed in PowerColorGit. You can change this in the [configuration](./src/config.json#L53).\
-Plese note that by default PowerColorGit checkout will do a git pull after checking out a branch. You can change this setting in the [configuration](./src/config.json#L54).\
+The _HEAD_ branch will by default not be displayed in PowerColorGit. You can change this in the [configuration](./src/config.json#L53).\
+By default, if there is a remote tracking branch, PowerColorGit checkout will do a _git pull_ after checking out a branch. You can change this setting in the [configuration](./src/config.json#L54).\
 In the example below three branches matching the partial branch name _feature_ was found, all of them are local only branches as indicated with the icons:
 ```powershell
 PowerColorGit checkout feature
