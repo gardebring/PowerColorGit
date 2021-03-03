@@ -38,8 +38,7 @@ PowerColorGit status
 ![powercolorgit status output](./media/screens/powercolorgit_status.png)
 
 ### List all remote-tracking and local branches.
-In this example, the currently selected branch is feature/add_support_for_branch_picker as indicated with the green color and checkmark.
-
+In this example, the currently selected branch is _feature/add_support_for_branch_picker_ as indicated with the green color and checkmark.
 Please note that the HEAD branch will by default not be displayed in PowerColorGit. You can change this in the [configuration](./src/config.json#L4).
 ```powershell
 PowerColorGit branch -a
