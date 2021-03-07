@@ -1,23 +1,49 @@
+
+function Get-Available-InteractiveMenu-Size{
+    param(
+        [Parameter(Mandatory = $true)]
+        [array]$itemsList,
+
+        [Parameter(Mandatory = $true)]
+        [short]$numberOfHeaderLines    
+    )
+    $consoleHeight = $Host.UI.RawUI.WindowSize.Height
+    $availMenuSize = $consoleHeight - $numberOfHeaderLines - 2
+
+    if($availMenuSize -gt $itemsList.Length){
+        $availMenuSize = $itemsList.Length
+    }
+    return $availMenuSize
+}
+
 function Show-InteractiveMenu{
     param(
         [Parameter(Mandatory = $true)]
         [array]$itemsList,
 
         [Parameter(Mandatory = $true)]
-        [short]$position
+        [short]$position,
+
+        [Parameter(Mandatory = $true)]
+        [short]$numberOfHeaderLines,
+        
+        [Parameter(Mandatory = $true)]
+        [short]$positionsToMove
     )
 
     $selectedItemIcon = [char]::ConvertFromUtf32(0xf061)
 
     $itemIndex = 0
+
     foreach ($item in $itemsList) {
         $color = $colors.white
         $prev = "   "
-        if($itemIndex -eq $position){
+        if($itemIndex -eq ($position - $positionsToMove)){
             $prev = " ${selectedItemIcon} "
             $color = $colors.green
         }
-        Write-Host "${color}${prev}${item} "
+
+        Write-Host "${color}${prev}${item}"
 
         $itemIndex++
     }
@@ -27,14 +53,36 @@ function Show-InteractiveMenu{
 function New-InteractiveMenu{
     param(
         [Parameter(Mandatory = $true)]
-        [array]$itemsList
+        [array]$itemsList,
+
+        [Parameter(Mandatory = $false)]
+        [short]$numberOfHeaderLines
     )
 
     $position = 0
     $virtualkeycode = $null
     [console]::CursorVisible = $False
+    $consoleWidth = $Host.UI.RawUI.WindowSize.Width
 
-    Show-InteractiveMenu -itemsList $itemsList -position $position
+    $lengthAdjustedItemsList = @()
+    
+    $maxItemWidth = $consoleWidth - 3
+
+    foreach ($item in $itemsList) {
+        if($item.length -gt $maxItemWidth){
+            $lengthAdjustedItemsList += $item.Substring(0, ($maxItemWidth - 3)) + "..."
+        }else{
+            $lengthAdjustedItemsList += ($item.PadRight($maxItemWidth, " "))
+        }
+    }
+
+    $itemsList = $lengthAdjustedItemsList
+
+    $availMenuSize = Get-Available-InteractiveMenu-Size -itemsList $itemsList -numberOfHeaderLines $numberOfHeaderLines
+
+    $trimmedItemsList = $itemsList[0..($availMenuSize - 1)]
+
+    Show-InteractiveMenu -itemsList $trimmedItemsList -position $position -numberOfHeaderLines $numberOfHeaderLines -positionsToMove 0
 
     while(27 -ne $virtualkeycode -and 13 -ne $virtualkeycode){ # Until esc or enter is pressed
         $pressedKeyData = $host.ui.rawui.readkey("IncludeKeyDown,NoEcho")
@@ -66,8 +114,12 @@ function New-InteractiveMenu{
             return $position
         }
 
-        $drawStartPosition = [System.Console]::CursorTop - $itemsList.Length
+        if($position -gt ($availMenuSize - 2)){
+            $positionsToMove = $position - ($availMenuSize - 1)
+            $trimmedItemsList = $itemsList[$positionsToMove..(($availMenuSize - 1) + $positionsToMove)]
+        }
+        $drawStartPosition = [System.Console]::CursorTop - $availMenuSize # $itemsList.Length
         [System.Console]::SetCursorPosition(0, $drawStartPosition)
-        Show-InteractiveMenu -itemsList $itemsList -position $position
+        Show-InteractiveMenu -itemsList $trimmedItemsList -position $position -numberOfHeaderLines $numberOfHeaderLines -positionsToMove $positionsToMove
     }
 }

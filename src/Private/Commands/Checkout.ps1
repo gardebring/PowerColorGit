@@ -14,12 +14,20 @@ function Get-Command-Checkout {
     $commandConfig = $config.commands.checkout
     $branchTypes = $config.commands.branch.branchTypes
 
-    if(1 -ne $params.count){
+    if($params.count -gt 1){
         return $null
     }
 
-    $branchName = $params[0]
-    
+    #if(1 -ne $params.count){
+    #    return $null
+    #}
+
+    $branchName = ""
+
+    if(1 -eq $params.count){
+        $branchName = $params[0]
+    }
+
     if($branchName.StartsWith("-")){
         return $null
     }
@@ -52,7 +60,7 @@ function Get-Command-Checkout {
             }
             $selectedBranchIndex = $index
             break;
-        }elseif($bn.Contains($branchName, "CurrentCultureIgnoreCase") -and -not $isCurrent){
+        }elseif($branchName -eq "" -or ($bn.Contains($branchName, "CurrentCultureIgnoreCase")) -and -not $isCurrent){
             $matchedBranches += $index
         }
         $index++
@@ -94,7 +102,7 @@ function Get-Command-Checkout {
             $menu += $menuItem
         }
 
-        $menuSelection = (New-InteractiveMenu -itemsList @($menu))
+        $menuSelection = (New-InteractiveMenu -itemsList @($menu) -numberOfHeaderLines 2)
         if($null -eq $menuSelection){
             Write-Host "No branch was selected"
             return ""
