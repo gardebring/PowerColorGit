@@ -66,11 +66,15 @@ function PowerColorGit{
     }
     "checkout"{
       $r = (Get-Command-Checkout -directory $directory -params $params -config $config)
+      Write-Host "a"
       if($null -eq $r){
+          Write-Host "a"
         . git $arguments
+        Write-Host "c"
       }else{
         #Write-Host $r
       }
+      Write-Host "d"
       break;
     }    
     default{
@@ -78,6 +82,7 @@ function PowerColorGit{
       break;
     }
   }
+  Write-Host "aaaa"
 }
 
 Export-ModuleMember -Function PowerColorGit

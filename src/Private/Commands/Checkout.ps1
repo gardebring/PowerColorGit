@@ -119,6 +119,7 @@ function Get-Command-Checkout {
         $pr = (git pull)
         Write-Host $pr
     }
+    Write-Host "yay"
 
     return ""
 }
