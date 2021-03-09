@@ -20,7 +20,10 @@ With PowerColorGit you instead get this output:
 PowerColorGit will also fallback to default behaviour when an option or command is not specifically implemented in PowerColorGit, so you can use commands like _PowerColorGit clone_, _PowerColorGit push_ or _powercolorgit status --short_ even though nothing is implemented in PowerColorGit for these.
 
 ## Installation
-Work in progress
+To install the module from the [PowerShell Gallery](https://www.powershellgallery.com/):
+```powershell
+Install-Module -Name PowerColorGit -Repository PSGallery
+```
 
 ## Example usage
 ```powershell
