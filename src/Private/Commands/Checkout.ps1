@@ -116,10 +116,8 @@ function Get-Command-Checkout {
     . git checkout $branchName
     if($commandConfig.pullAfterCheckout -and $selectedBranchHasRemote){
         Write-Host "Pulling changes..."
-        $pr = (git pull)
+        $pr = (git pull 2>&1)
         Write-Host $pr
     }
-    Write-Host "yay"
-
     return ""
 }
