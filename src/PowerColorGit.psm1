@@ -15,10 +15,16 @@ function PowerColorGit{
 #>
 
   $arguments = $args
+  $v = Get-Version
 
   # No command given. Just run default git (help) command and exit.
   if($arguments.Length -eq 0){
-    . git
+    Write-Host "PowerColorGit version ${v}"
+    $gitOutput = (. git)
+    $gitOutput = $gitOutput.Replace("usage: git ", "usage: PowerColorGit ")
+    foreach ($o in $gitOutput) {
+      Write-Host $o
+    }
     return
   }
 
@@ -74,6 +80,9 @@ function PowerColorGit{
       break;
     }    
     default{
+      if($arguments.Length -eq 1 -and $arguments[0] -eq "--version"){
+        Write-Host "PowerColorGit version ${v}"
+      }
       . git $arguments
       break;
     }

@@ -119,5 +119,6 @@ function Get-Command-Checkout {
         $pr = (git pull 2>&1)
         Write-Host $pr
     }
+    
     return ""
 }
