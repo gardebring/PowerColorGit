@@ -45,17 +45,19 @@ function Get-Git-Branches-Complex {
         branchName = @()
         isRemote = @()
         isLocal = @()
-    }    
+    }
+    
+    $remotesLikePattern = "*remotes/*"
 
     foreach($branch in $availableBranches){
         $isCurrent = $branch.isCurrent -eq "*"
-        $isRemote = $branch.branch -like("*remotes/*")
-        $isLocal = $branch.branch -notlike("*remotes/*")
+        $isRemote = $branch.branch -like($remotesLikePattern)
+        $isLocal = $branch.branch -notlike($remotesLikePattern)
         $addCurrent = $True
         $index = 0;
 
         foreach($addedBranch in $branches["branchName"]){
-            $c = $branch.branch -like("*$addedBranch*")
+            $c = $branch.branch -like("*$addedBranch*") -and $branch.branch -like($remotesLikePattern)
             if($c){
 
                 $branches["isRemote"][$index] = $isRemote
