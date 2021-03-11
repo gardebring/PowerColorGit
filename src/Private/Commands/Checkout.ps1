@@ -18,10 +18,6 @@ function Get-Command-Checkout {
         return $null
     }
 
-    #if(1 -ne $params.count){
-    #    return $null
-    #}
-
     $branchName = ""
 
     if(1 -eq $params.count){
@@ -53,21 +49,14 @@ function Get-Command-Checkout {
             $currentBranchName = $bn
         }
 
-        if($bn -eq $branchName){
-            if($isCurrent){
-                Write-Host "Already on branch ${green}'${bn}'."
-                return ""
-            }
-            $selectedBranchIndex = $index
-            break;
-        }elseif($branchName -eq "" -or ($bn.Contains($branchName, "CurrentCultureIgnoreCase")) -and -not $isCurrent){
+        if($branchName -eq "" -or ($bn.Contains($branchName, "CurrentCultureIgnoreCase")) -and -not $isCurrent){
             $matchedBranches += $index
         }
         $index++
     }
 
-    if(-1 -eq $selectedBranchIndex -and 0 -eq $matchedBranches.length){
-        Write-Host "No matching branch was found"
+    if(0 -eq $matchedBranches.length){
+        Write-Host "No suitable matching branch was found"
         return ""
     }
 

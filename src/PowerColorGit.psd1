@@ -10,7 +10,7 @@
 RootModule = 'PowerColorGit.psm1'
 
 # Version number of this module.
-ModuleVersion = '1.0.1'
+ModuleVersion = '1.0.2'
 
 # Supported PSEditions
 # CompatiblePSEditions = @()
@@ -28,7 +28,11 @@ CompanyName = 'Unknown'
 Copyright = 'Copyright (c) 2021 Anders Gardebring'
 
 # Description of the functionality provided by this module
-Description = 'Git functions to provide an easier and prettier command line experience with git'
+Description = 'Git functions to provide an easier and prettier command line experience with git.
+Git status and branch information will we displayed with colors and icons.
+Project site is at https://github.com/gardebring/PowerColorGit
+The module has a dependency on the powershell module Terminal-Icons (https://github.com/devblackops/Terminal-Icons/)
+being installed and configured first.'
 
 # Minimum version of the PowerShell engine required by this module
 # PowerShellVersion = ''
