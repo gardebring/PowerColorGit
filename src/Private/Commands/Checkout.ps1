@@ -40,8 +40,6 @@ function Get-Command-Checkout {
 
     foreach ($branch in $branches["branchName"]) {
         $isCurrent = $branches["isCurrent"][$index]
-        $isLocal = $branches["isLocal"][$index]
-        $isRemote = $branches["isRemote"][$index]
 
         $bn = $branch
 
@@ -64,32 +62,8 @@ function Get-Command-Checkout {
         $selectedBranchIndex = $matchedBranches[0]
     }elseif($matchedBranches.length -gt 1){
         Write-Host "You are currently on branch ${green}'${currentBranchName}'${white}.${nl}Please use the arrow keys and press enter to select another branch."
-        $menu = @()
-        foreach ($index in $matchedBranches) {
-            $isLocal = $branches["isLocal"][$index]
-            $isRemote = $branches["isRemote"][$index]
-            $bn = $branches["branchName"][$index]
 
-            $menuItem = ""
-
-            if($isLocal){
-                $menuItem = -join($menuItem, $symbols.house, " ")
-            }else{
-                $menuItem = -join($menuItem, "  ")
-            }
-
-            if($isRemote){
-                $menuItem = -join($menuItem, $symbols.globe, " ")
-            }else{
-                $menuItem = -join($menuItem, "  ")
-            }
-
-            $menuItem = -join($menuItem, (Get-Branch-Icon -branchName $bn -branchTypes $branchTypes -glyphs $glyphs -setIconColor $false)," ")
-
-            $menuItem = -join($menuItem, $bn)
-
-            $menu += $menuItem
-        }
+        $menu = (New-InteractiveMenu-BranchItem -matchedBranches $matchedBranches -branches $branches -branchTypes $branchTypes)
 
         $menuSelection = (New-InteractiveMenu -itemsList @($menu) -numberOfHeaderLines 2)
         if($null -eq $menuSelection){

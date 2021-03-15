@@ -26,6 +26,10 @@ function Get-Git-Branches {
     git branch -a
 }
 
+function Get-Current-BranchName {
+    git branch --show-current
+}
+
 function Get-Git-Branches-Complex {
     param(
         [Parameter(Mandatory = $true)]
@@ -150,4 +154,46 @@ function Get-Branch-Icon{
             return $icon
         }
     }
+}
+
+function New-InteractiveMenu-BranchItem{
+    param(
+        [Parameter(Mandatory = $true)]
+        [array]$matchedBranches,
+
+        [Parameter(Mandatory = $true)]
+        $branches,
+
+        [Parameter(Mandatory = $true)]
+        $branchTypes       
+    )
+
+    $menu = @()
+
+    foreach ($index in $matchedBranches) {
+        $isLocal = $branches["isLocal"][$index]
+        $isRemote = $branches["isRemote"][$index]
+        $bn = $branches["branchName"][$index]
+
+        $menuItem = ""
+
+        if($isLocal){
+            $menuItem = -join($menuItem, $symbols.house, " ")
+        }else{
+            $menuItem = -join($menuItem, "  ")
+        }
+
+        if($isRemote){
+            $menuItem = -join($menuItem, $symbols.globe, " ")
+        }else{
+            $menuItem = -join($menuItem, "  ")
+        }
+
+        $menuItem = -join($menuItem, (Get-Branch-Icon -branchName $bn -branchTypes $branchTypes -glyphs $glyphs -setIconColor $false)," ")
+
+        $menuItem = -join($menuItem, $bn)
+
+        $menu += $menuItem
+    }
+    return $menu    
 }
