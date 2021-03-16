@@ -44,12 +44,7 @@ function Get-Git-Branches-Complex {
 
     $availableBranches = Get-Git-Branches | ConvertFrom-String -propertyNames isCurrent, branch
 
-    $branches = @{
-        isCurrent = @()
-        branchName = @()
-        isRemote = @()
-        isLocal = @()
-    }
+    $branchList = @()
     
     $remotesLikePattern = "*remotes/*"
 
@@ -60,11 +55,11 @@ function Get-Git-Branches-Complex {
         $addCurrent = $True
         $index = 0;
 
-        foreach($addedBranch in $branches["branchName"]){
-            $c = $branch.branch -like("*$addedBranch*") -and $branch.branch -like($remotesLikePattern)
+        foreach($addedBranch in $branchList){
+            $bn = $addedBranch.name
+            $c = $branch.branch -like("*$bn*") -and $branch.branch -like($remotesLikePattern)
             if($c){
-
-                $branches["isRemote"][$index] = $isRemote
+                $addedBranch.isRemote = $isRemote
                 $addCurrent = $false
                 break
             }
@@ -87,14 +82,19 @@ function Get-Git-Branches-Complex {
         }
 
         if($addCurrent ){
-            $branches["isCurrent"] += $isCurrent
-            $branches["isRemote"] += $isRemote
-            $branches["isLocal"] += $isLocal
-            $branches["branchName"] += $branchName
+
+            $branch = @{
+                name = $branchName
+                isCurrent = $isCurrent
+                isRemote = $isRemote
+                isLocal = $isLocal
+            }
+            
+            $branchList += $branch            
         }
       }
       
-      return $branches
+      return $branchList
 }
 
 function Get-Is-Branch-Type{
@@ -171,9 +171,10 @@ function New-InteractiveMenu-BranchItem{
     $menu = @()
 
     foreach ($index in $matchedBranches) {
-        $isLocal = $branches["isLocal"][$index]
-        $isRemote = $branches["isRemote"][$index]
-        $bn = $branches["branchName"][$index]
+        $branch = $branches[$index]
+        $isLocal = $branch.isLocal
+        $isRemote = $branch.isRemote
+        $bn = $branch.name
 
         $menuItem = ""
 

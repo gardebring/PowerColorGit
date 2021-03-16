@@ -38,16 +38,14 @@ function Get-Command-Checkout {
     $white = $colors.white
     $currentBranchName = $null
 
-    foreach ($branch in $branches["branchName"]) {
-        $isCurrent = $branches["isCurrent"][$index]
+    foreach ($branch in $branches) {
+        $bn = $branch.name
 
-        $bn = $branch
-
-        if($isCurrent){
+        if($branch.isCurrent){
             $currentBranchName = $bn
         }
 
-        if($branchName -eq "" -or ($bn.Contains($branchName, "CurrentCultureIgnoreCase")) -and -not $isCurrent){
+        if($branchName -eq "" -or ($bn.Contains($branchName, "CurrentCultureIgnoreCase")) -and -not $branch.isCurrent){
             $matchedBranches += $index
         }
         $index++
@@ -73,8 +71,8 @@ function Get-Command-Checkout {
         $selectedBranchIndex = $matchedBranches[$menuSelection]
     }
     
-    $selectedBranchHasRemote = $branches["isRemote"][$selectedBranchIndex]
-    $branchName = $branches["branchName"][$selectedBranchIndex]
+    $selectedBranchHasRemote = $branches[$selectedBranchIndex].isRemote
+    $branchName = $branches[$selectedBranchIndex].name
 
     . git checkout $branchName
     if($commandConfig.pullAfterCheckout -and $selectedBranchHasRemote){

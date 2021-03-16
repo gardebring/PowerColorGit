@@ -59,50 +59,44 @@ function Get-Command-Branch {
     $branchTypes = $commandConfig.branchTypes
 
     $branches = (Get-Git-Branches-Complex -includehead $commandConfig.showHead -showAll $options.showAll -remote $options.remote)
-    
+
     $output = ""
     $nl = "`r`n"
 
-    $index = 0
-        foreach($bn in $branches["branchName"]){
-        $isCurrent = $branches["isCurrent"][$index]
-        $isLocal = $branches["isLocal"][$index]
-        $isRemote = $branches["isRemote"][$index]
-
+    foreach($branch in $branches){
         $color = $colors.white
 
-        if($isCurrent){
+        if($branch.isCurrent){
             $color = $colors.green
-        }elseif($isLocal){
+        }elseif($branch.isLocal){
             $color = $colors.white
-        }elseif($isRemote){
+        }elseif($branch.isRemote){
             $color = $colors.brightRed
         }
         
         $output = -join($output, $color)
 
-        if($isCurrent){
+        if($branch.isCurrent){
             $output = -join($output, $symbols.check, " ")
         }else{
             $output = -join($output, "  ")
         }
 
-        if($isLocal){
+        if($branch.isLocal){
             $output = -join($output, $symbols.house, " ")
         }else{
             $output = -join($output, "  ")
         }
         
-        if($isRemote){
+        if($branch.isRemote){
             $output = -join($output, $symbols.globe, " ")
         }else{
             $output = -join($output, "  ")
         }
 
-        $output = -join($output, (Get-Branch-Icon -branchName $bn -branchTypes $branchTypes -glyphs $glyphs -setIconColor $true), $color, " ")
+        $output = -join($output, (Get-Branch-Icon -branchName $branch.name -branchTypes $branchTypes -glyphs $glyphs -setIconColor $true), $color, " ")
 
-        $output = -join($output, $bn, $nl)
-    $index++
+        $output = -join($output, $branch.name, $nl)
     }
   
     Set-Location $directory
