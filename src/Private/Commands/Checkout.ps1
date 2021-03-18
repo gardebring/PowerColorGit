@@ -28,51 +28,39 @@ function Get-Command-Checkout {
         return $null
     }
 
-    $branches = (Get-Git-Branches-Complex -includehead $commandConfig.includeHead  -showAll $True -remote $False)
-
-    $matchedBranches = @()
-    $selectedBranchIndex = -1
+    $selectedBranch = $null
     $nl = "`r`n"
-    $index = 0
     $green = $colors.green
     $white = $colors.white
-    $currentBranchName = $null
+    $red = $colors.red
+    $currentBranchName = (Get-Current-BranchName)
 
-    foreach ($branch in $branches) {
-        $bn = $branch.name
+    $branches = (Get-Git-Branches-Complex -includehead $commandConfig.includeHead -showAll $True -remote $False)
 
-        if($branch.isCurrent){
-            $currentBranchName = $bn
-        }
-
-        if($branchName -eq "" -or ($bn.Contains($branchName, "CurrentCultureIgnoreCase")) -and -not $branch.isCurrent){
-            $matchedBranches += $index
-        }
-        $index++
-    }
+    $matchedBranches = [System.Object[]](Get-Matching-Branches -branchName $branchName -branches $branches)
 
     if(0 -eq $matchedBranches.length){
-        Write-Host "No suitable matching branch was found"
+        Write-Host "${red}No suitable matching branch was found"
         return ""
     }
 
     if($matchedBranches.length -eq 1){
-        $selectedBranchIndex = $matchedBranches[0]
+        $selectedBranch = $matchedBranches[0]
     }elseif($matchedBranches.length -gt 1){
         Write-Host "You are currently on branch ${green}'${currentBranchName}'${white}.${nl}Please use the arrow keys and press enter to select another branch."
 
-        $menu = (New-InteractiveMenu-BranchItem -matchedBranches $matchedBranches -branches $branches -branchTypes $branchTypes)
+        $menu = (New-InteractiveMenu-BranchItem -matchedBranches $matchedBranches -branchTypes $branchTypes)
 
         $menuSelection = (New-InteractiveMenu -itemsList @($menu) -numberOfHeaderLines 2)
         if($null -eq $menuSelection){
             Write-Host "No branch was selected"
             return ""
         }
-        $selectedBranchIndex = $matchedBranches[$menuSelection]
+        $selectedBranch = $matchedBranches[$menuSelection]
     }
     
-    $selectedBranchHasRemote = $branches[$selectedBranchIndex].isRemote
-    $branchName = $branches[$selectedBranchIndex].name
+    $selectedBranchHasRemote = $selectedBranch.isRemote
+    $branchName = $selectedBranch.name
 
     . git checkout $branchName
     if($commandConfig.pullAfterCheckout -and $selectedBranchHasRemote){

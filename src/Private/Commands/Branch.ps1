@@ -25,6 +25,9 @@ function Get-Command-Branch {
         $options = @{
             showAll = $false
             remote = $false
+            deleteFullyMergedBranch = $false
+            deleteNotMergedBranch = $false
+            branchName = $null
         }
 
         foreach ($param in $params) {
@@ -35,10 +38,22 @@ function Get-Command-Branch {
                         $options.showAll = $true
                         break
                     }
+                    {(($p -eq "-d") -or ($p -eq "--delete"))} {
+                        $options.deleteFullyMergedBranch = $true
+                        break
+                    }
+                    {(($p -eq "-D"))} {
+                        $options.deleteNotMergedBranch = $true
+                        break
+                    }                    
                     {(($p -eq "-r") -or ($p -eq "-remotes"))} {
                         $options.remote = $true
                         break
                     }
+                    {((-not $p.StartsWith("-")))} {
+                        $options.branchName = $param
+                        break
+                    }                    
                     default{
                         return $null;
                     }
@@ -52,7 +67,7 @@ function Get-Command-Branch {
 
     $options = (Get-Options -params $params)
 
-    if($null -eq $options){
+    if(($null -eq $options) -or ($options.showAll -and $options.deleteFullyMergedBranch) -or ($options.showAll -and $options.deleteNotMergedBranch)){
         return $null
     }
 
@@ -62,6 +77,54 @@ function Get-Command-Branch {
 
     $output = ""
     $nl = "`r`n"
+    $green = $colors.green
+    $white = $colors.white
+    $red = $colors.red    
+
+    if($options.deleteFullyMergedBranch -or $options.deleteNotMergedBranch){
+        $branchName = $options.branchName
+        $currentBranchName = (Get-Current-BranchName)
+        $selectedBranch = $null
+        $matchedBranches = [System.Object[]](Get-Matching-Branches -branchName $branchName -branches $branches)
+        if(0 -eq $matchedBranches.length){
+            Write-Host "${red}No suitable matching branch was found"
+            return ""
+        }
+        if($matchedBranches.length -eq 1){
+            $selectedBranch = $matchedBranches[0]
+        }elseif($matchedBranches.length -gt 1){
+            Write-Host "You are currently on branch ${green}'${currentBranchName}'${white}.${nl}Please use the arrow keys and press enter to select what branch to ${red}delete!"
+    
+            $menu = (New-InteractiveMenu-BranchItem -matchedBranches $matchedBranches -branchTypes $branchTypes)
+    
+            $menuSelection = (New-InteractiveMenu -itemsList @($menu) -numberOfHeaderLines 2 -activeColor $colors.red)
+            if($null -eq $menuSelection){
+                Write-Host "No branch was selected"
+                return ""
+            }
+            $selectedBranch = $matchedBranches[$menuSelection]
+        }
+        
+        #$selectedBranchHasRemote = $selectedBranch.isRemote
+        $branchName = $selectedBranch.name
+
+        $msg = "${white}Do you want to ${red}delete ${white}the branch '${red}${branchName}${white}'? [Y/N]"
+        do {
+            $response = Read-Host -Prompt $msg
+            if ($response -eq 'y') {
+                Write-Host "${white}Deleting branch '${red}${branchName}${white}'..."
+                if($options.deleteFullyMergedBranch){
+                    . git branch $branchName -d
+                }elseif($options.deleteNotMergedBranch){
+                    . git branch $branchName -D 
+                }
+                return ""
+                # prompt for name/address and add to certificate
+            }
+        } until ($response -eq 'n')        
+        Write-Host "Operation aborted"
+        return ""
+    }    
 
     foreach($branch in $branches){
         $color = $colors.white
@@ -99,7 +162,6 @@ function Get-Command-Branch {
         $output = -join($output, $branch.name, $nl)
     }
   
-    Set-Location $directory
     return $output
 }
 

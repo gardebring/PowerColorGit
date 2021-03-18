@@ -28,7 +28,10 @@ function Show-InteractiveMenu{
         [short]$numberOfHeaderLines,
         
         [Parameter(Mandatory = $true)]
-        [short]$positionsToMove
+        [short]$positionsToMove,
+
+        [Parameter(Mandatory = $true)]
+        [string]$activeColor
     )
 
     $selectedItemIcon = [char]::ConvertFromUtf32(0xf061)
@@ -40,7 +43,7 @@ function Show-InteractiveMenu{
         $prev = "   "
         if($itemIndex -eq ($position - $positionsToMove)){
             $prev = " ${selectedItemIcon} "
-            $color = $colors.green
+            $color = $activeColor
         }
 
         Write-Host "${color}${prev}${item}"
@@ -56,8 +59,14 @@ function New-InteractiveMenu{
         [array]$itemsList,
 
         [Parameter(Mandatory = $false)]
-        [short]$numberOfHeaderLines
+        [short]$numberOfHeaderLines,
+
+        [string]$activeColor
     )
+
+    if("" -eq $activeColor -or $null -eq $activeColor){
+        $activeColor = $colors.green
+    }
 
     $position = 0
     $virtualkeycode = $null
@@ -82,7 +91,7 @@ function New-InteractiveMenu{
 
     $trimmedItemsList = $itemsList[0..($availMenuSize - 1)]
 
-    Show-InteractiveMenu -itemsList $trimmedItemsList -position $position -numberOfHeaderLines $numberOfHeaderLines -positionsToMove 0
+    Show-InteractiveMenu -itemsList $trimmedItemsList -position $position -numberOfHeaderLines $numberOfHeaderLines -positionsToMove 0 -activeColor $activeColor
 
     while(27 -ne $virtualkeycode -and 13 -ne $virtualkeycode){ # Until esc or enter is pressed
         $pressedKeyData = $host.ui.rawui.readkey("IncludeKeyDown,NoEcho")
@@ -120,6 +129,6 @@ function New-InteractiveMenu{
         }
         $drawStartPosition = [System.Console]::CursorTop - $availMenuSize # $itemsList.Length
         [System.Console]::SetCursorPosition(0, $drawStartPosition)
-        Show-InteractiveMenu -itemsList $trimmedItemsList -position $position -numberOfHeaderLines $numberOfHeaderLines -positionsToMove $positionsToMove
+        Show-InteractiveMenu -itemsList $trimmedItemsList -position $position -numberOfHeaderLines $numberOfHeaderLines -positionsToMove $positionsToMove -activeColor $activeColor
     }
 }

@@ -156,13 +156,33 @@ function Get-Branch-Icon{
     }
 }
 
+function Get-Matching-Branches{
+    param(
+        [Parameter(Mandatory = $true)]
+        [AllowEmptyString()]
+        [string]$branchName,
+    
+        [Parameter(Mandatory = $true)]
+        [System.Object[]]$branches
+    )
+
+    $matchedBranches = @()
+
+    foreach ($branch in $branches) {
+        $bn = $branch.name
+
+        if($branchName -eq "" -or $branchName -eq $null -or ($bn.Contains($branchName, "CurrentCultureIgnoreCase")) -and -not $branch.isCurrent){
+            $matchedBranches += $branch
+        }
+    }
+
+    return $matchedBranches
+}
+
 function New-InteractiveMenu-BranchItem{
     param(
         [Parameter(Mandatory = $true)]
-        [array]$matchedBranches,
-
-        [Parameter(Mandatory = $true)]
-        $branches,
+        [object[]]$matchedBranches,
 
         [Parameter(Mandatory = $true)]
         $branchTypes       
@@ -170,8 +190,7 @@ function New-InteractiveMenu-BranchItem{
 
     $menu = @()
 
-    foreach ($index in $matchedBranches) {
-        $branch = $branches[$index]
+    foreach ($branch in $matchedBranches) {
         $isLocal = $branch.isLocal
         $isRemote = $branch.isRemote
         $bn = $branch.name
