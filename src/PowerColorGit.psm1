@@ -90,3 +90,4 @@ function PowerColorGit{
 }
 
 Export-ModuleMember -Function PowerColorGit
+

@@ -300,7 +300,7 @@ function Get-Command-Status{
     $unmergedChanges = $gitStatusItems | Where-Object {$true -eq $_.unmergedPath}
   
     $nl = "`r`n"
-    $output = -join("On branch ", $colors.green, $branchInfo.name, $nl)
+    $output = -join($colors.white, "On branch '", $colors.green, $branchInfo.name, $colors.white, "'", $nl)
   
     if($null -ne $branchInfo.upstreamBranch){
         $upstreamBranchStatus = (Get-Upstream-Branch-Status -branchInfo $branchInfo -colors $colors)

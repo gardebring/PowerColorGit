@@ -27,6 +27,7 @@ function Get-Command-Branch {
             remote = $false
             deleteFullyMergedBranch = $false
             deleteNotMergedBranch = $false
+            force = $false
             branchName = $null
         }
 
@@ -42,6 +43,10 @@ function Get-Command-Branch {
                         $options.deleteFullyMergedBranch = $true
                         break
                     }
+                    {(($p -eq "-f") -or ($p -eq "--force"))} {
+                        $options.force = $true
+                        break
+                    }                    
                     {(($p -eq "-D"))} {
                         $options.deleteNotMergedBranch = $true
                         break
@@ -59,7 +64,11 @@ function Get-Command-Branch {
                     }
                 }
             }
-        }        
+        }
+
+        if($options.deleteFullyMergedBranch -and $options.force -and (-not $options.deleteNotMergedBranch)){
+            $options.deleteNotMergedBranch = $true
+        }
 
         return $options
     }
@@ -93,7 +102,7 @@ function Get-Command-Branch {
         if($matchedBranches.length -eq 1){
             $selectedBranch = $matchedBranches[0]
         }elseif($matchedBranches.length -gt 1){
-            Write-Host "You are currently on branch ${green}'${currentBranchName}'${white}.${nl}Please use the arrow keys and press enter to select what branch to ${red}delete!"
+            Write-Host "You are currently on branch '${green}${currentBranchName}${white}'.${nl}Please use the arrow keys and press enter to select what branch to ${red}delete!"
     
             $menu = (New-InteractiveMenu-BranchItem -matchedBranches $matchedBranches -branchTypes $branchTypes)
     
@@ -113,18 +122,17 @@ function Get-Command-Branch {
             $response = Read-Host -Prompt $msg
             if ($response -eq 'y') {
                 Write-Host "${white}Deleting branch '${red}${branchName}${white}'..."
-                if($options.deleteFullyMergedBranch){
-                    . git branch $branchName -d
-                }elseif($options.deleteNotMergedBranch){
-                    . git branch $branchName -D 
+                if($options.deleteNotMergedBranch){
+                    . git branch $branchName -D
+                }elseif($options.deleteFullyMergedBranch){
+                    . git branch $branchName -d 
                 }
                 return ""
-                # prompt for name/address and add to certificate
             }
         } until ($response -eq 'n')        
         Write-Host "Operation aborted"
         return ""
-    }    
+    }
 
     foreach($branch in $branches){
         $color = $colors.white
@@ -146,13 +154,13 @@ function Get-Command-Branch {
         }
 
         if($branch.isLocal){
-            $output = -join($output, $symbols.house, " ")
+            $output = -join($output, $emojis.house, "")
         }else{
             $output = -join($output, "  ")
         }
         
         if($branch.isRemote){
-            $output = -join($output, $symbols.globe, " ")
+            $output = -join($output, $emojis.globe, "")
         }else{
             $output = -join($output, "  ")
         }

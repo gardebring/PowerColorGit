@@ -47,7 +47,7 @@ function Get-Command-Checkout {
     if($matchedBranches.length -eq 1){
         $selectedBranch = $matchedBranches[0]
     }elseif($matchedBranches.length -gt 1){
-        Write-Host "You are currently on branch ${green}'${currentBranchName}'${white}.${nl}Please use the arrow keys and press enter to select another branch."
+        Write-Host "You are currently on branch '${green}${currentBranchName}${white}'.${nl}Please use the arrow keys and press enter to select another branch."
 
         $menu = (New-InteractiveMenu-BranchItem -matchedBranches $matchedBranches -branchTypes $branchTypes)
 

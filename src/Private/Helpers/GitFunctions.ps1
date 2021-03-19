@@ -30,6 +30,11 @@ function Get-Current-BranchName {
     git branch --show-current
 }
 
+function Get-Origin {
+    # if no origin, will return null
+    git remote
+}
+
 function Get-Git-Branches-Complex {
     param(
         [Parameter(Mandatory = $true)]
@@ -42,6 +47,7 @@ function Get-Git-Branches-Complex {
         [Boolean]$remote        
     )
 
+    $origin = Get-Origin
     $availableBranches = Get-Git-Branches | ConvertFrom-String -propertyNames isCurrent, branch
 
     $branchList = @()
@@ -66,7 +72,7 @@ function Get-Git-Branches-Complex {
             $index += 1
     	}
         
-        $branchName = $branch.branch -replace("remotes/origin/", "")
+        $branchName = $branch.branch -replace("remotes/${origin}/", "")
 
         if(("HEAD" -eq $branchName) -and (-not $includeHead)){
             $addCurrent = $false
@@ -144,9 +150,13 @@ function Get-Branch-Icon{
     }
 
     if($null -eq $selectedBranchType){
-        return " "
+        return "  "
     }else{
-        $icon = $glyphs[$selectedBranchType.icon]
+        if($null -ne $selectedBranchType.icon){
+            $icon = -join(" ", $glyphs[$selectedBranchType.icon])
+        }elseif($null -ne $selectedBranchType.emoji){
+            $icon = ([char]::ConvertFromUtf32($selectedBranchType.emoji))
+        }
         if($setIconColor){
             $color = (ConvertFrom-RGBColor -RGB ($selectedBranchType.color))
             return -join($color, $icon) 
@@ -198,13 +208,13 @@ function New-InteractiveMenu-BranchItem{
         $menuItem = ""
 
         if($isLocal){
-            $menuItem = -join($menuItem, $symbols.house, " ")
+            $menuItem = -join($menuItem, $emojis.house, "")
         }else{
             $menuItem = -join($menuItem, "  ")
         }
 
         if($isRemote){
-            $menuItem = -join($menuItem, $symbols.globe, " ")
+            $menuItem = -join($menuItem, $emojis.globe, "")
         }else{
             $menuItem = -join($menuItem, "  ")
         }
