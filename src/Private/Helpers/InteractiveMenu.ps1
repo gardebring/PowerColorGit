@@ -75,11 +75,13 @@ function New-InteractiveMenu{
 
     $lengthAdjustedItemsList = @()
     
-    $maxItemWidth = $consoleWidth - 3
+    $widthDecrementor = 4
+
+    $maxItemWidth = $consoleWidth - $widthDecrementor
 
     foreach ($item in $itemsList) {
         if($item.length -gt $maxItemWidth){
-            $lengthAdjustedItemsList += $item.Substring(0, ($maxItemWidth - 3)) + "..."
+            $lengthAdjustedItemsList += $item.Substring(0, ($maxItemWidth - $widthDecrementor)) + "..."
         }else{
             $lengthAdjustedItemsList += ($item.PadRight($maxItemWidth, " "))
         }

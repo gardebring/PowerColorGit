@@ -14,8 +14,8 @@
                     "branchNames": ["stable", "release", "production"],
                     "branchStartsWith":  ["release", "rel"],
                     "color": "00FF00",
-                    "icon": "nf-fa-check",
-                    "emoji": null
+                    "icon": null,
+                    "emoji": "0x1F680"
                 }
                 ,
                 {
@@ -36,23 +36,23 @@
                     "branchNames": null,
                     "branchStartsWith":  ["hotfix"],
                     "color": "FF7900",
-                    "icon": "nf-fa-fire",
-                    "emoji": null
+                    "icon": null,
+                    "emoji": "0x1F525"
                 },
                 {
                     "branchNames": ["dev", "development"],
                     "branchStartsWith":  ["dev", "development"],
                     "color": "EEEE8B",
-                    "icon": "nf-mdi-code_braces",
-                    "emoji": null
+                    "icon": null,
+                    "emoji": "0x1F477"
                 }
                 ,
                 {
                     "branchNames": ["test", "testing"],
                     "branchStartsWith":  ["test", "testing"],
                     "color": "EEEE8B",
-                    "icon": "nf-mdi-test_tube",
-                    "emoji": null
+                    "icon": null,
+                    "emoji": "0x1F440"
                 }
             ]
         },
