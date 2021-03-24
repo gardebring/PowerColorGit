@@ -139,7 +139,9 @@ function Get-Command-Branch {
                 $response = Read-Host -Prompt "${white}Do you want to ${red}delete ${white}the remote branch '${red}${branchName}${white}'? [Y/N]"
                 if ($response -eq "y") {
                     $origin = Get-Origin
-                    . git push $origin --delete $branchName
+                    $gp = (git push $origin --delete $branchName 2>&1)
+                    Write-Host $gp
+                    #. git push $origin --delete $branchName
                     return ""
                 }
             } until ($response -eq "n")             
