@@ -140,7 +140,9 @@ function Get-Command-Branch {
                 if ($response -eq "y") {
                     $origin = Get-Origin
                     $gp = (git push $origin --delete $branchName 2>&1)
-                    Write-Output $gp
+                    foreach ($line in $gp) {
+                        Write-Host $line
+                    }
                     #. git push $origin --delete $branchName
                     return ""
                 }
