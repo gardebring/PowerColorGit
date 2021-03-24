@@ -82,7 +82,8 @@ function Get-Command-Branch {
 
     $branchTypes = $commandConfig.branchTypes
 
-    $branches = (Get-Git-Branches-Complex -includehead $commandConfig.showHead -showAll $options.showAll -remote $options.remote)
+    $showAll = $options.showAll -or $options.deleteNotMergedBranch -or $options.deleteFullyMergedBranch
+    $branches = (Get-Git-Branches-Complex -includehead $commandConfig.showHead -showAll $showAll -remote $options.remote)
 
     $output = ""
     $nl = "`r`n"
@@ -114,23 +115,38 @@ function Get-Command-Branch {
             $selectedBranch = $matchedBranches[$menuSelection]
         }
         
-        #$selectedBranchHasRemote = $selectedBranch.isRemote
         $branchName = $selectedBranch.name
-
-        $msg = "${white}Do you want to ${red}delete ${white}the branch '${red}${branchName}${white}'? [Y/N]"
-        do {
-            $response = Read-Host -Prompt $msg
-            if ($response -eq 'y') {
-                Write-Host "${white}Deleting branch '${red}${branchName}${white}'..."
-                if($options.deleteNotMergedBranch){
-                    . git branch $branchName -D
-                }elseif($options.deleteFullyMergedBranch){
-                    . git branch $branchName -d 
+       
+        if($selectedBranch.isLocal){
+            do {
+                $response = Read-Host -Prompt "${white}Do you want to ${red}delete ${white}the local branch '${red}${branchName}${white}'? [Y/N]"
+                if ($response -eq "y") {
+                    Write-Host "${white}Deleting local branch '${red}${branchName}${white}'..."
+                    if($options.deleteNotMergedBranch){
+                        . git branch $branchName -D
+                    }elseif($options.deleteFullyMergedBranch){
+                        . git branch $branchName -d 
+                    }
                 }
-                return ""
-            }
-        } until ($response -eq 'n')        
+            } until ($response -eq "n" -or $response -eq "y") 
+        }
+        if($response -eq "n"){
+            Write-Host "Operation aborted"
+        }
+
+        if($selectedBranch.isRemote){
+            do {
+                $response = Read-Host -Prompt "${white}Do you want to ${red}delete ${white}the remote branch '${red}${branchName}${white}'? [Y/N]"
+                if ($response -eq "y") {
+                    $origin = Get-Origin
+                    . git push $origin --delete $branchName
+                    return ""
+                }
+            } until ($response -eq "n")             
+        }
+
         Write-Host "Operation aborted"
+
         return ""
     }
 

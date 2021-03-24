@@ -14,7 +14,8 @@ function Get-IsGitDirectory {
         $pathToTest = $checkIn.FullName + '/.git'
         if ((Test-Path $pathToTest) -eq $TRUE) {
             return $TRUE
-        } else {
+        }
+        else {
             $checkIn = $checkIn.parent
         }
     }
@@ -54,56 +55,56 @@ function Get-Git-Branches-Complex {
     
     $remotesLikePattern = "*remotes/*"
 
-    foreach($branch in $availableBranches){
+    foreach ($branch in $availableBranches) {
         $isCurrent = $branch.isCurrent -eq "*"
-        $isRemote = $branch.branch -like($remotesLikePattern)
-        $isLocal = $branch.branch -notlike($remotesLikePattern)
+        $isRemote = $branch.branch -like ($remotesLikePattern)
+        $isLocal = $branch.branch -notlike ($remotesLikePattern)
         $addCurrent = $True
         $index = 0;
 
-        foreach($addedBranch in $branchList){
+        foreach ($addedBranch in $branchList) {
             $bn = $addedBranch.name
-            $c = $branch.branch -like("*$bn*") -and $branch.branch -like($remotesLikePattern)
-            if($c){
+            $c = $branch.branch -like ("*$bn*") -and $branch.branch -like ($remotesLikePattern)
+            if ($c) {
                 $addedBranch.isRemote = $isRemote
                 $addCurrent = $false
                 break
             }
             $index += 1
-    	}
+        }
         
-        $branchName = $branch.branch -replace("remotes/${origin}/", "")
+        $branchName = $branch.branch -replace ("remotes/${origin}/", "")
 
-        if(("HEAD" -eq $branchName) -and (-not $includeHead)){
+        if (("HEAD" -eq $branchName) -and (-not $includeHead)) {
             $addCurrent = $false
         }
 
-        if($addCurrent){
-            if($isRemote -and (-not $showAll)-and (-not $remote)){
+        if ($addCurrent) {
+            if ($isRemote -and (-not $showAll) -and (-not $remote)) {
                 $addCurrent = $false
             }
-            if($isLocal -and ($remote)){
+            if ($isLocal -and ($remote)) {
                 $addCurrent = $false
             }
         }
 
-        if($addCurrent ){
+        if ($addCurrent ) {
 
             $branch = @{
-                name = $branchName
+                name      = $branchName
                 isCurrent = $isCurrent
-                isRemote = $isRemote
-                isLocal = $isLocal
+                isRemote  = $isRemote
+                isLocal   = $isLocal
             }
             
             $branchList += $branch            
         }
-      }
+    }
       
-      return $branchList
+    return $branchList
 }
 
-function Get-Is-Branch-Type{
+function Get-Is-Branch-Type {
     param(
         [Parameter(Mandatory = $true)]
         [string]$branchName,
@@ -111,10 +112,10 @@ function Get-Is-Branch-Type{
         [Parameter(Mandatory = $true)]
         [string]$shouldStartWith
     )
-    return ($branchName.StartsWith("${shouldStartWith}/", "CurrentCultureIgnoreCase") -or $branchName.StartsWith("${shouldStartWith}-", "CurrentCultureIgnoreCase")  -or $branchName.StartsWith("${shouldStartWith}_", "CurrentCultureIgnoreCase"))            
+    return ($branchName.StartsWith("${shouldStartWith}/", "CurrentCultureIgnoreCase") -or $branchName.StartsWith("${shouldStartWith}-", "CurrentCultureIgnoreCase") -or $branchName.StartsWith("${shouldStartWith}_", "CurrentCultureIgnoreCase"))            
 }
 
-function Get-Branch-Icon{
+function Get-Branch-Icon {
     param(
         [Parameter(Mandatory = $true)]
         [string]$branchName,
@@ -131,17 +132,17 @@ function Get-Branch-Icon{
 
     $selectedBranchType = $null
     foreach ($branchType in $branchTypes) {
-        if($null -ne $branchType.branchNames){
+        if ($null -ne $branchType.branchNames) {
             foreach ($bn in $branchType.branchNames) {
-                if($bn -eq $branchName){
+                if ($bn -eq $branchName) {
                     $selectedBranchType = $branchType
                     break                    
                 }
             }
         }
-        if($null -ne $branchType.branchStartsWith){
-            foreach ($bs in $branchType.branchStartsWith){
-                if(Get-Is-Branch-Type -branchName $branchName -shouldStartWith $bs){
+        if ($null -ne $branchType.branchStartsWith) {
+            foreach ($bs in $branchType.branchStartsWith) {
+                if (Get-Is-Branch-Type -branchName $branchName -shouldStartWith $bs) {
                     $selectedBranchType = $branchType
                     break                
                 }
@@ -149,24 +150,27 @@ function Get-Branch-Icon{
         }
     }
 
-    if($null -eq $selectedBranchType){
+    if ($null -eq $selectedBranchType) {
         return "  "
-    }else{
-        if($null -ne $selectedBranchType.icon){
-            $icon = -join(" ", $glyphs[$selectedBranchType.icon])
-        }elseif($null -ne $selectedBranchType.emoji){
+    }
+    else {
+        if ($null -ne $selectedBranchType.icon) {
+            $icon = -join (" ", $glyphs[$selectedBranchType.icon])
+        }
+        elseif ($null -ne $selectedBranchType.emoji) {
             $icon = ([char]::ConvertFromUtf32($selectedBranchType.emoji))
         }
-        if($setIconColor){
+        if ($setIconColor) {
             $color = (ConvertFrom-RGBColor -RGB ($selectedBranchType.color))
-            return -join($color, $icon) 
-        }else{
+            return -join ($color, $icon) 
+        }
+        else {
             return $icon
         }
     }
 }
 
-function Get-Matching-Branches{
+function Get-Matching-Branches {
     param(
         [Parameter(Mandatory = $true)]
         [AllowEmptyString()]
@@ -181,7 +185,7 @@ function Get-Matching-Branches{
     foreach ($branch in $branches) {
         $bn = $branch.name
 
-        if($branchName -eq "" -or $branchName -eq $null -or ($bn.Contains($branchName, "CurrentCultureIgnoreCase")) -and -not $branch.isCurrent){
+        if ($branchName -eq "" -or $branchName -eq $null -or ($bn.Contains($branchName, "CurrentCultureIgnoreCase")) -and -not $branch.isCurrent) {
             $matchedBranches += $branch
         }
     }
@@ -189,7 +193,7 @@ function Get-Matching-Branches{
     return $matchedBranches
 }
 
-function New-InteractiveMenu-BranchItem{
+function New-InteractiveMenu-BranchItem {
     param(
         [Parameter(Mandatory = $true)]
         [object[]]$matchedBranches,
@@ -207,21 +211,23 @@ function New-InteractiveMenu-BranchItem{
 
         $menuItem = ""
 
-        if($isLocal){
-            $menuItem = -join($menuItem, $emojis.house, "")
-        }else{
-            $menuItem = -join($menuItem, "  ")
+        if ($isLocal) {
+            $menuItem = -join ($menuItem, $emojis.house, "")
+        }
+        else {
+            $menuItem = -join ($menuItem, "  ")
         }
 
-        if($isRemote){
-            $menuItem = -join($menuItem, $emojis.globe, "")
-        }else{
-            $menuItem = -join($menuItem, "  ")
+        if ($isRemote) {
+            $menuItem = -join ($menuItem, $emojis.globe, "")
+        }
+        else {
+            $menuItem = -join ($menuItem, "  ")
         }
 
-        $menuItem = -join($menuItem, (Get-Branch-Icon -branchName $bn -branchTypes $branchTypes -glyphs $glyphs -setIconColor $false)," ")
+        $menuItem = -join ($menuItem, (Get-Branch-Icon -branchName $bn -branchTypes $branchTypes -glyphs $glyphs -setIconColor $false), " ")
 
-        $menuItem = -join($menuItem, $bn)
+        $menuItem = -join ($menuItem, $bn)
 
         $menu += $menuItem
     }
